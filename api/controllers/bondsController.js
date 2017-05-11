@@ -12,7 +12,7 @@ exports.list_all_bonds = function(req, res) {
       if (err)
         res.send(err);
       res.json(bonds);
-    });
+    }).limit(100);
   }
   else {
       console.log("ReadAll");

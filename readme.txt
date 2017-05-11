@@ -15,6 +15,8 @@ Bond Data Server
 	- Get that bond by it's mongo-defined _id:  GET http://localhost:3333/bonds/<_idValue>
 	- Query for bond:
 		- http://localhost:3333/bonds?query={"ParentSector":"Basic Industry"}
+		- http://localhost:3333/bonds?query={"ParentSector":"Basic Industry", "Coupon": {"$gt":5,"$lt":6}}
+		
 
 			
 			
