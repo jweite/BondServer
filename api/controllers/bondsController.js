@@ -6,8 +6,21 @@ var mongoose = require('mongoose'),
 
 exports.list_all_bonds = function(req, res) {
   var limit = parseInt(req.query.limit);
+  console.log("limit: " + limit);
+  
   var skip = parseInt(req.query.skip);
+  console.log("skip: " + skip);
+
   var sortField = req.query.sortField || "_id";
+  console.log("sortField: " + sortField);
+
+  var sortDirection = req.query.sortDirection || "";
+  console.log("sortDirection: " + sortDirection);
+  
+  var sortClause = {};
+  sortClause[sortField] = (sortDirection.startsWith('desc')) ? -1 : 1;
+  console.log(sortClause);
+  
   
   if (typeof(req.query.query) != "undefined") {
     console.log("Query:" + req.query.query);
@@ -16,7 +29,7 @@ exports.list_all_bonds = function(req, res) {
       if (err)
         res.send(err);
       res.json(bonds);
-    }).sort(sortField).limit(isNaN(limit) ? 100 : limit).skip(isNaN(limit) ? 0 : skip);
+    }).sort(sortClause).limit(isNaN(limit) ? 100 : limit).skip(isNaN(limit) ? 0 : skip);
   }
   else {
       console.log("ReadAll");
@@ -24,7 +37,7 @@ exports.list_all_bonds = function(req, res) {
 		if (err)
 		  res.send(err);
 		res.json(bonds);
-	  }).sort(sortField).limit(isNaN(limit) ? 100000 : limit).skip(isNaN(limit) ? 0 : skip);
+	  }).sort(sortClause).limit(isNaN(limit) ? 100000 : limit).skip(isNaN(limit) ? 0 : skip);
   }
 };
 
