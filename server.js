@@ -3,7 +3,7 @@ var express = require('express'),
   app = express(),
   port = process.env.PORT || 3333,
   mongoose = require('mongoose'),
-  Article = require('./api/models/bondsModel'),
+  Bonds = require('./api/models/bondsModel'),
   bodyParser = require('body-parser');
 
 // Set up Mongoose  
@@ -27,4 +27,4 @@ routes(app);
 
 // Begin...
 app.listen(port);
-console.log('article list RESTful API server started on: ' + port);
+console.log('bonddata RESTful API server started on: ' + port);
