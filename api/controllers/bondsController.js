@@ -6,6 +6,7 @@ var mongoose = require('mongoose'),
 
 exports.list_all_bonds = function(req, res) {
   var limit = parseInt(req.query.limit);
+  var skip = parseInt(req.query.skip);
   var sortField = req.query.sortField || "_id";
   
   if (typeof(req.query.query) != "undefined") {
@@ -15,7 +16,7 @@ exports.list_all_bonds = function(req, res) {
       if (err)
         res.send(err);
       res.json(bonds);
-    }).sort(sortField).limit(isNaN(limit) ? 100 : limit);
+    }).sort(sortField).limit(isNaN(limit) ? 100 : limit).skip(isNaN(limit) ? 0 : skip);
   }
   else {
       console.log("ReadAll");
@@ -23,7 +24,7 @@ exports.list_all_bonds = function(req, res) {
 		if (err)
 		  res.send(err);
 		res.json(bonds);
-	  }).sort(sortField).limit(isNaN(limit) ? 100000 : limit);
+	  }).sort(sortField).limit(isNaN(limit) ? 100000 : limit).skip(isNaN(limit) ? 0 : skip);
   }
 };
 
