@@ -25,6 +25,27 @@ exports.list_all_bonds = function(req, res) {
   if (typeof(req.query.query) != "undefined") {
     console.log("Query:" + req.query.query);
     var query = JSON.parse(req.query.query);
+
+	if (typeof(query.Maturity) !== "undefined") {
+		console.log("Special Handling MaturityDate: " + typeof(query.Maturity));
+		if (typeof(query.Maturity) === "string") {
+			var d = Date.parse(query.Maturity);
+			query.Maturity = Date.parse(query.Maturity);
+		}
+		else if (typeof(query.Maturity) === "object") {
+			// For today we handle two element objects, typically a range query ($gte and a $lt)
+			if (Object.keys(query.Maturity).length > 0) {
+				var d = new Date(Date.parse(query.Maturity[Object.keys(query.Maturity)[0]]));
+				query.Maturity[Object.keys(query.Maturity)[0]] = d;
+			}
+			if (Object.keys(query.Maturity).length > 1) {
+				var d = new Date(Date.parse(query.Maturity[Object.keys(query.Maturity)[1]]));
+				query.Maturity[Object.keys(query.Maturity)[1]] = d;
+			}
+		}
+		console.log(query.Maturity);
+	}
+	
     Bonds.find(query, null, function (err, bonds) {
       if (err)
         res.send(err);
