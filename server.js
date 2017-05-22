@@ -4,6 +4,7 @@ var express = require('express'),
   port = process.env.PORT || 3333,
   mongoose = require('mongoose'),
   Bonds = require('./api/models/bondsModel'),
+  BondMetrics = require('./api/models/bondMetricsModel'),
   bodyParser = require('body-parser');
 
 // Set up Mongoose  

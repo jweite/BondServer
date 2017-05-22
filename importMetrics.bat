@@ -1,0 +1,1 @@
+mongoimport -h localhost -d bonddata -c bondMetrics --type csv --file "c:\temp\microstrategyPOCData\BAMLExtract\DailyBondMetrics2016.csv" --columnsHaveTypes --fields "Run_Date.date_ms(yyyy-MM-dd),Cusip.string(),Duration.double(),FaceValue.double(),Price.double(),OAS.double(),Weight.double(),Yield.double()" --parseGrace skipRow
