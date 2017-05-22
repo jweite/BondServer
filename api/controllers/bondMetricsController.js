@@ -15,6 +15,9 @@ exports.list_all_bondMetrics = function(req, res) {
   if (typeof(req.query.fields) !== "undefined") {
 	  projection = req.query.fields;
 	  projection = projection.replace(/,/g, " ");		// Commas are nice.  Spaces are required.
+	  if (projection.indexOf("_id") < 0) {
+		  projection = projection + " -_id";			// Unless you ask for _id, exclude it.
+	  }
   }
   console.log("projection: " + projection);
 
