@@ -10,6 +10,13 @@ exports.list_all_bondMetrics = function(req, res) {
   
   var skip = parseInt(req.query.skip);
   console.log("skip: " + skip);
+  
+  var projection = null;
+  if (typeof(req.query.fields) !== "undefined") {
+	  projection = req.query.fields;
+	  projection = projection.replace(/,/g, " ");		// Commas are nice.  Spaces are required.
+  }
+  console.log("projection: " + projection);
 
   if (typeof(req.query.query) != "undefined") {
     console.log("BondMetrics Query:" + req.query.query);
@@ -35,7 +42,7 @@ exports.list_all_bondMetrics = function(req, res) {
 		console.log(query.Run_Date);
 	}
 	
-    BondMetrics.find(query, null, function (err, bondMetrics) {
+    BondMetrics.find(query, projection, function (err, bondMetrics) {
       if (err)
         res.send(err);
       res.json(bondMetrics);
@@ -43,7 +50,7 @@ exports.list_all_bondMetrics = function(req, res) {
   }
   else {
       console.log("BondMetrics ReadAll");
-	  BondMetrics.find({}, function(err, bondMetrics) {
+	  BondMetrics.find({}, projection, function(err, bondMetrics) {
 		if (err)
 		  res.send(err);
 		res.json(bondMetrics);
