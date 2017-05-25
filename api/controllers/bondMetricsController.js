@@ -5,6 +5,9 @@ var mongoose = require('mongoose'),
   BondMetrics = mongoose.model('BondMetrics');
 
 exports.list_all_bondMetrics = function(req, res) {
+  console.log("query:");
+  console.log(req.query);
+
   var limit = parseInt(req.query.limit);
   console.log("limit: " + limit);
   
@@ -20,6 +23,14 @@ exports.list_all_bondMetrics = function(req, res) {
 	  }
   }
   console.log("projection: " + projection);
+  
+  var groupFields = null;
+  console.log("groupFields string = " + req.query.groupFields);
+  if (typeof(req.query.groupFields) !== "undefined") {
+	groupFields = req.query.groupFields.split(',');
+  }	
+  console.log("groupFields:");
+  console.log(groupFields);
 
   if (typeof(req.query.query) != "undefined") {
     console.log("BondMetrics Query:" + req.query.query);
@@ -44,12 +55,37 @@ exports.list_all_bondMetrics = function(req, res) {
 		}
 		console.log(query.Run_Date);
 	}
-	
-    BondMetrics.find(query, projection, function (err, bondMetrics) {
-      if (err)
-        res.send(err);
-      res.json(bondMetrics);
-    }).sort({"Run_Date": 1}).limit(isNaN(limit) ? 100 : limit).skip(isNaN(skip) ? 0 : skip);
+
+	if (groupFields === null || groupFields.length == 0 ) {
+		BondMetrics.find(query, projection, function (err, bondMetrics) {
+		  if (err)
+			res.send(err);
+		  res.json(bondMetrics);
+		}).sort({"Run_Date": 1}).limit(isNaN(limit) ? 100 : limit).skip(isNaN(skip) ? 0 : skip);
+	}
+	else {
+		var projectionArray = (projection !== null && projection.length > 0) ?
+				projection.split(' ') : 
+				Object.keys(BondMetrics.schema.obj);
+
+		// The order of the pipeline's entries is assumed by the code below that pushes values into them.
+		//  If you re-order the entries then the hard-coded offsets below need to be adjusted.
+		var pipeline = [
+			{"$match" : query},
+			{"$sort" : { "Cusip" : 1, "Run_Date" : 1}},
+			{"$group" : { _id: {}, data: { $push:  {} } } } 
+		];
+		
+		groupFields.forEach(field => pipeline[2]["$group"]["_id"][field] = "$"+field);	// 2 = $group pipeline member offset in pipeline.
+		
+		projectionArray.forEach(field => { if (!groupFields.includes(field)) pipeline[2]["$group"]["data"]["$push"][field] = "$"+field; } ); 
+		
+		BondMetrics.aggregate(pipeline, function (err, bondMetrics) {
+		  if (err)
+			res.send(err);
+		  res.json(bondMetrics);
+		});
+	}
   }
   else {
       console.log("BondMetrics ReadAll");
