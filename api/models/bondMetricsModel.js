@@ -29,6 +29,10 @@ var BondMetricsSchema = new Schema({
   Yield: {
     type: Number,
   }
-}, {collection: 'bondMetrics'});
+}, {collection: 'bondMetrics', toObject: {virtuals: true}, toJSON: {virtuals: true}});
+
+BondMetricsSchema.virtual('Run_Date_ms').get(function () {
+	return this.Run_Date.getTime();
+});
 
 module.exports = mongoose.model('BondMetrics', BondMetricsSchema);

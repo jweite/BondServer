@@ -18,9 +18,6 @@ exports.list_all_bondMetrics = function(req, res) {
   if (typeof(req.query.fields) !== "undefined") {
 	  projection = req.query.fields;
 	  projection = projection.replace(/,/g, " ");		// Commas are nice.  Spaces are required.
-	  if (projection.indexOf("_id") < 0) {
-		  projection = projection + " -_id";			// Unless you ask for _id, exclude it.
-	  }
   }
   console.log("projection: " + projection);
   
@@ -57,9 +54,16 @@ exports.list_all_bondMetrics = function(req, res) {
 	}
 
 	if (groupFields === null || groupFields.length == 0 ) {
+
+		if (projection.indexOf("_id") < 0) {
+			projection = projection + " -_id";			// Unless you ask for _id, we explicitly exclude it.
+		}
+		console.log("projection: " + projection);
+
 		BondMetrics.find(query, projection, function (err, bondMetrics) {
 		  if (err)
 			res.send(err);
+		  console.log(bondMetrics[0].Run_Date);
 		  res.json(bondMetrics);
 		}).sort({"Run_Date": 1}).limit(isNaN(limit) ? 100 : limit).skip(isNaN(skip) ? 0 : skip);
 	}
